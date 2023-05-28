@@ -1,0 +1,2 @@
+# Amazing-Squares
+MATLAB Project 
