@@ -60,16 +60,21 @@ global new_game step_back
 new_game = 0;
 step_back = 0;
 h1_pushbutton = uicontrol(gmain,'style','pushbutton','unit','normalized','string','新游戏',...
-    'fontsize',20,'backgroundcolor',[0.9 0.8 0.8],...
+    'fontsize',10,'backgroundcolor',[0.9 0.8 0.8],...
     'ForegroundColor',[0.2 0.2 0.2],'position',[0.02 0.9 0.07 0.05],...
     'FontWeight','bold','callback',...
     'new_game=1');
 
 h2_pushbutton = uicontrol(gmain,'style','pushbutton','unit','normalized','string','撤回',...
-    'fontsize',20,'backgroundcolor',[0.9 0.8 0.8],...
+    'fontsize',10,'backgroundcolor',[0.9 0.8 0.8],...
     'ForegroundColor',[0.2 0.2 0.2],'position',[0.1 0.9 0.05 0.05],...
     'FontWeight','bold','callback',...
     'step_back = 1');
+
+scores = 0;
+score_textbox = uicontrol(gmain, 'style', 'text','unit','normalized',...
+    'position', [0.2 0.9 0.1 0.05],'fontsize',10);
+set(score_textbox, 'string', sprintf('Scores:%d', scores));
 
 %% 变量初始化
 amazing_1 = zeros(5,5); % 口
@@ -141,16 +146,19 @@ amazings = {amazing_17, amazing_16, amazing_15, amazing_14, amazing_13, ...
             amazing_6, amazing_5, amazing_4, amazing_3, amazing_2, amazing_1};
 
 board_color = zeros(14,14); % 棋盘颜色 0 白色代表没有方块 1 红色 。。。
-board_color(11:14,:) = 1;
-board_color(:,11:14) = 1;
+% board_color(11:14,:) = 1;
+% board_color(:,11:14) = 1;
 
-squares_1 = cell2mat(amazings(randi([1, 17], 1, 1)));
-squares_2 = cell2mat(amazings(randi([1, 17], 1, 1)));
-squares_3 = cell2mat(amazings(randi([1, 17], 1, 1)));
+colours = ["red" "yellow" "green" "blue"];  % 棋盘颜色 1 红色 2 黄色 3 绿色 4 蓝色
+num_colour = 4;
 
-squares_4 = cell2mat(amazings(randi([1, 17], 1, 1)));
-squares_5 = cell2mat(amazings(randi([1, 17], 1, 1)));
-squares_6 = cell2mat(amazings(randi([1, 17], 1, 1)));
+squares_1 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+squares_2 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+squares_3 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+
+squares_4 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+squares_5 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+squares_6 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
 
 all_mat = zeros(10,25);
 all_mats(1) = {all_mat}; 
@@ -169,9 +177,9 @@ while true
         squares_1 = squares_4;
         squares_2 = squares_5;
         squares_3 = squares_6;
-        squares_4 = cell2mat(amazings(randi([1, 17], 1, 1)));
-        squares_5 = cell2mat(amazings(randi([1, 17], 1, 1)));
-        squares_6 = cell2mat(amazings(randi([1, 17], 1, 1)));
+        squares_4 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+        squares_5 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+        squares_6 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
         new_game = 0;
     end
 
@@ -196,23 +204,23 @@ while true
         squares_1 = squares_4;
         squares_2 = squares_5;
         squares_3 = squares_6;
-        squares_4 = cell2mat(amazings(randi([1, 17], 1, 1)));
-        squares_5 = cell2mat(amazings(randi([1, 17], 1, 1)));
-        squares_6 = cell2mat(amazings(randi([1, 17], 1, 1)));
+        squares_4 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+        squares_5 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+        squares_6 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
     end
 
     % 绘制预览
     subplot('position',board1);
-    plot_squares(0,0,squares_1)
+    plot_squares(0,0,squares_1,colours)
     subplot('position',board2);
-    plot_squares(0,0,squares_2)
+    plot_squares(0,0,squares_2,colours)
     subplot('position',board3);
-    plot_squares(0,0,squares_3)
+    plot_squares(0,0,squares_3,colours)
     
     subplot('position',board4);
-    plot_squares(1,7,squares_4)
-    plot_squares(1,1,squares_5)
-    plot_squares(7,1,squares_6)
+    plot_squares(1,7,squares_4,colours)
+    plot_squares(1,1,squares_5,colours)
+    plot_squares(7,7,squares_6,colours)
 
     waitforbuttonpress;
     [x, y, button] = ginput(1);  % 获取鼠标点击位置
@@ -250,23 +258,31 @@ while true
 
             % 判断是否填满一行或者一列
             board_color_logic = logical(board_color(1:10,1:10));
+            num_row = 0;
+            num_col = 0;
             for i = 1:10
                 if sum(board_color_logic(i,:))==10
                     board_color(i,1:10) = 0;
+                    num_row  =  num_row + 1;
                 end
                 if sum(board_color_logic(:,i))==10
                     board_color(1:10,i) = 0;
+                    num_col = num_col + 1;
                 end
             end
+            % 分数计算，消去的行数加上消去的列数减去重叠部分
+            scores = 10 * (num_row + num_col) - num_row * num_col;
+            set(score_textbox, 'string', sprintf('Scores:%d', scores));
+
 
             % 重新上色
             subplot('position',board);
             for i = 1:10
                 for j = 1:10
-                    if board_color(i,j) == 1
-                        rectangle('Position', [i-1, j-1, 1, 1], 'FaceColor', 'r') % 左下角坐标和长宽
-                    elseif board_color(i,j) == 0
+                    if board_color(i,j) == 0
                         rectangle('Position', [i-1, j-1, 1, 1], 'FaceColor', 'white') % 左下角坐标和长宽
+                    else
+                        rectangle('Position', [i-1, j-1, 1, 1], 'FaceColor', colours(board_color(i,j))) % 左下角坐标和长宽
                     end
                 end
             end
@@ -288,14 +304,14 @@ while true
 end
 %% 函数
 
-function plot_squares(x,y,squares)
+function plot_squares(x,y,squares, colours)
     for i = 1:size(squares,1)
         for j = 1:size(squares,2)
-            if squares(i,j) == 1
+            if squares(i,j) == 0
 %                 fprintf('i:%d,j:%d\n', i, j);
-                rectangle('Position', [x+i-1, y+j-1, 1, 1], 'FaceColor', 'red')
-            elseif squares(i,j) == 0
                 rectangle('Position', [x+i-1, y+j-1, 1, 1], 'FaceColor', 'white')
+            else
+                rectangle('Position', [x+i-1, y+j-1, 1, 1], 'FaceColor', colours(squares(i,j)))
             end
         end
     end
