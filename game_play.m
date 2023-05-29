@@ -152,13 +152,13 @@ board_color = zeros(14,14); % 棋盘颜色 0 白色代表没有方块 1 红色 �
 colours = ["red" "yellow" "green" "blue"];  % 棋盘颜色 1 红色 2 黄色 3 绿色 4 蓝色
 num_colour = 4;
 
-squares_1 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
-squares_2 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
-squares_3 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+squares_1 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
+squares_2 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
+squares_3 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
 
-squares_4 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
-squares_5 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
-squares_6 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+squares_4 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
+squares_5 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
+squares_6 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
 
 all_mat = zeros(10,25);
 all_mats(1) = {all_mat}; 
@@ -177,10 +177,12 @@ while true
         squares_1 = squares_4;
         squares_2 = squares_5;
         squares_3 = squares_6;
-        squares_4 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
-        squares_5 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
-        squares_6 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+        squares_4 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
+        squares_5 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
+        squares_6 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
         new_game = 0;
+        scores = 0;
+        set(score_textbox, 'string', sprintf('Scores:%d', scores));
     end
 
     if step_back == 1
@@ -204,9 +206,9 @@ while true
         squares_1 = squares_4;
         squares_2 = squares_5;
         squares_3 = squares_6;
-        squares_4 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
-        squares_5 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
-        squares_6 = cell2mat(amazings(randi([1, 17], 1, 1))).*randi(num_colour,5);
+        squares_4 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
+        squares_5 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
+        squares_6 = cell2mat(amazings(randi([1, 17], 1, 1)))*randi(num_colour);
     end
 
     % 绘制预览
