@@ -1,7 +1,8 @@
+
 clc;clear;close all
 %% 初始化窗口
 screen = get(0,'ScreenSize'); % 获取屏幕大小
-gmain = figure('Color',[1 1 1],'Name','神奇方块','unit','pixel','NumberTitle',...
+gmain = figure('Color',[1 1 1],'Name','魔法方块','unit','pixel','NumberTitle',...
     'off','MenuBar','none','Resize','off','DeleteFcn','clear all;clc;',...
     'Pos',[screen(3)/4,screen(4)/4,screen(3)*0.5,screen(4)*0.5]);
 % 'Pos'后面为[窗口横坐标，窗口纵坐标，窗口宽度，窗口高度]，窗口起始坐标从左下角开始
@@ -60,20 +61,21 @@ global new_game step_back
 new_game = 0;
 step_back = 0;
 h1_pushbutton = uicontrol(gmain,'style','pushbutton','unit','normalized','string','新游戏',...
-    'fontsize',10,'backgroundcolor',[0.9 0.8 0.8],...
+    'fontsize',20,'backgroundcolor',[0.9 0.8 0.8],...
     'ForegroundColor',[0.2 0.2 0.2],'position',[0.02 0.9 0.07 0.05],...
     'FontWeight','bold','callback',...
     'new_game=1');
 
 h2_pushbutton = uicontrol(gmain,'style','pushbutton','unit','normalized','string','撤回',...
-    'fontsize',10,'backgroundcolor',[0.9 0.8 0.8],...
+    'fontsize',20,'backgroundcolor',[0.9 0.8 0.8],...
     'ForegroundColor',[0.2 0.2 0.2],'position',[0.1 0.9 0.05 0.05],...
     'FontWeight','bold','callback',...
     'step_back = 1');
 
 scores = 0;
+pre_scores = 0;
 score_textbox = uicontrol(gmain, 'style', 'text','unit','normalized',...
-    'position', [0.2 0.9 0.1 0.05],'fontsize',10);
+    'position', [0.2 0.9 0.15 0.05],'fontsize',20,'backgroundcolor',[0.9 0.8 0.8]);
 set(score_textbox, 'string', sprintf('Scores:%d', scores));
 
 %% 变量初始化
@@ -146,8 +148,8 @@ amazings = {amazing_17, amazing_16, amazing_15, amazing_14, amazing_13, ...
             amazing_6, amazing_5, amazing_4, amazing_3, amazing_2, amazing_1};
 
 board_color = zeros(14,14); % 棋盘颜色 0 白色代表没有方块 1 红色 。。。
-% board_color(11:14,:) = 1;
-% board_color(:,11:14) = 1;
+board_color(11:14,:) = 1;
+board_color(:,11:14) = 1;
 
 colours = ["red" "yellow" "green" "blue"];  % 棋盘颜色 1 红色 2 黄色 3 绿色 4 蓝色
 num_colour = 4;
@@ -166,13 +168,16 @@ all_mats(1) = {all_mat};
 global choice;
 choice = 1;
 
+gamover1 = 3;
+gamover2 = 0;
+
 %% 开始游戏
 while true
     % 新游戏按钮
     if new_game == 1
         board_color(1:10,1:10) = zeros(10,10);
         subplot('position',board);
-        plot_squares(0,0,board_color);
+        plot_squares(0,0,board_color,colours);
                 
         squares_1 = squares_4;
         squares_2 = squares_5;
@@ -190,7 +195,7 @@ while true
         
         board_color(1:10,1:10) = all_mat(1:10,1:10);
         subplot('position',board);
-        plot_squares(0,0,board_color);
+        plot_squares(0,0,board_color,colours);
 
         squares_1 = all_mat(1:5,11:15);
         squares_2 = all_mat(1:5,16:20);
@@ -198,6 +203,8 @@ while true
         squares_4 = all_mat(6:10,11:15);
         squares_5 = all_mat(6:10,16:20);
         squares_6 = all_mat(6:10,21:25);
+        scores = pre_scores;
+        set(score_textbox, 'string', sprintf('Scores:%d', scores));
         step_back = 0;
     end
 
@@ -223,6 +230,7 @@ while true
     plot_squares(1,7,squares_4,colours)
     plot_squares(1,1,squares_5,colours)
     plot_squares(7,7,squares_6,colours)
+
 
     waitforbuttonpress;
     [x, y, button] = ginput(1);  % 获取鼠标点击位置
@@ -273,7 +281,8 @@ while true
                 end
             end
             % 分数计算，消去的行数加上消去的列数减去重叠部分
-            scores = 10 * (num_row + num_col) - num_row * num_col;
+            pre_scores = scores;
+            scores = scores + 10 * (num_row + num_col) - num_row * num_col;
             set(score_textbox, 'string', sprintf('Scores:%d', scores));
 
 
@@ -322,8 +331,6 @@ end
 % 定义键盘输入的回调函数
 function keypress_callback(src, event)
     global choice;
-    
     choice = str2num(event.Character);
-%     fprintf('cb c: %d\n', choice)
 end
 
